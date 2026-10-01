@@ -1,0 +1,472 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════
+ * 设计体系
+ * 令牌取自 beautifului.dev：一套很克制的单色系统，
+ * ink/ink-2/ink-3 三级文字，surface/inset/field/hover 四级背景，
+ * line/line-strong 两级边框，全部用 oklch 定义，浅深两套。
+ * ═══════════════════════════════════════════════════════════ */
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI",
+    "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* 背景层级：page(最底) → canvas → surface(卡片) → inset/field(凹陷) */
+  --color-page: var(--page);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-inset: var(--inset);
+  --color-field: var(--field);
+  --color-hover: var(--hover);
+  --color-hover-2: var(--hover-2);
+
+  /* 文字三级 */
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+
+  /* 边框两级 */
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-line-soft: var(--line-soft);
+
+  /* 强调与状态色 */
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-tint: var(--accent-tint);
+  --color-green: var(--green);
+  --color-green-tint: var(--green-tint);
+  --color-orange: var(--orange);
+  --color-orange-tint: var(--orange-tint);
+  --color-red: var(--red);
+  --color-red-tint: var(--red-tint);
+
+  /* 圆角梯度 */
+  --radius-chip: 6px;
+  --radius-control: 8px;
+  --radius-card: 10px;
+  --radius-window: 14px;
+}
+
+/* ── 浅色令牌 ───────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  --page: oklch(98.5% 0.001 286.376);
+  --canvas: oklch(96.1% 0.002 247.84);
+  --surface: oklch(100% 0 0);
+  --inset: oklch(97.9% 0.002 247.839);
+  --field: oklch(96.1% 0.001 286.375);
+  --hover: oklch(97% 0.002 247.839);
+  --hover-2: oklch(93.3% 0.003 247.86);
+
+  --ink: oklch(24.7% 0.006 258.361);
+  --ink-2: oklch(50.6% 0.01 264.477);
+  --ink-3: oklch(69.5% 0.009 264.505);
+
+  --line: oklch(94.6% 0.003 264.542);
+  --line-strong: oklch(91.2% 0.005 258.326);
+  --line-soft: oklch(96.6% 0.002 264.542);
+
+  --accent: oklch(62.6% 0.205 254.947);
+  --accent-ink: oklch(55.6% 0.187 255.617);
+  --accent-tint: oklch(96% 0.019 252.878);
+  --green: oklch(60.3% 0.155 150.883);
+  --green-tint: oklch(95.8% 0.017 159.118);
+  --orange: oklch(68.9% 0.179 49.902);
+  --orange-tint: oklch(96.4% 0.021 67.581);
+  --red: oklch(62.1% 0.192 23.042);
+  --red-tint: oklch(95.6% 0.017 17.462);
+
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-link: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── 深色令牌 ───────────────────────────────────────────── */
+.dark {
+  color-scheme: dark;
+
+  --page: oklch(20.9% 0.004 264.477);
+  --canvas: oklch(23.1% 0.004 264.487);
+  --surface: oklch(26% 0.006 271.191);
+  --inset: oklch(24.3% 0.004 264.492);
+  --field: oklch(29.3% 0.006 271.223);
+  --hover: oklch(28.9% 0.006 271.22);
+  --hover-2: oklch(31.8% 0.007 274.747);
+
+  --ink: oklch(96.4% 0.002 247.839);
+  --ink-2: oklch(73.1% 0.008 260.731);
+  --ink-3: oklch(54.1% 0.01 264.484);
+
+  --line: oklch(30.8% 0.006 258.354);
+  --line-strong: oklch(35.6% 0.007 264.474);
+  --line-soft: oklch(27.8% 0.006 258.354);
+
+  --accent: oklch(68% 0.173 253.301);
+  --accent-ink: oklch(78.8% 0.113 248.33);
+  --accent-tint: oklch(68% 0.173 253.301 / 0.16);
+  --green: oklch(70.5% 0.154 153.814);
+  --green-tint: oklch(70.5% 0.154 153.814 / 0.14);
+  --orange: oklch(74.6% 0.156 55.642);
+  --orange-tint: oklch(74.6% 0.156 55.642 / 0.14);
+  --red: oklch(66.6% 0.18 21.433);
+  --red-tint: oklch(66.6% 0.18 21.433 / 0.14);
+}
+
+/* ═══════════════════════════════════════════════════════════
+ * 阴影
+ * 参考站的做法是「一圈 1px 描边 + 多层极淡投影」，所以边界很干净。
+ * 这里刻意用普通类而不是 @theme 的 --shadow-*：
+ * 自定义属性里的 var() 在声明处就求值，若走 @theme 间接引用，
+ * 深色覆盖会被冻结在浅色值上。走普通类则在元素使用处求值，深色正常生效。
+ * ═══════════════════════════════════════════════════════════ */
+:root {
+  --shadow-xs: 0 0 4px 0 #0000000a;
+  --shadow-sm: 0 18px 47px 0 #00000008, 0 7.5px 19px 0 #00000005, 0 4px 10.5px 0 #00000005,
+    0 2.3px 5.8px 0 #00000003, 0 1.2px 3.1px 0 #00000003, 0 0.5px 1.3px 0 #00000003;
+  --shadow-md: 0 17.54px 23.39px 0 #0000000a, 0 9.4px 12.5px 0 #00000008, 0 5.25px 7px 0 #00000005,
+    0 2.79px 3.72px -2px #00000003, 0 1.16px 1.5px 0 #00000003;
+
+  --elev-hairline: 0 0 0 1px var(--line);
+  --elev-btn: 0 0 0 1px var(--line-strong), var(--shadow-xs);
+  --elev-card: 0 0 0 1px var(--line), var(--shadow-sm);
+  --elev-raised: 0 0 0 1px var(--line), var(--shadow-md);
+  --elev-inset-field: inset 0 1px 2px oklch(0% 0 0 / 0.12);
+}
+
+.dark {
+  --elev-hairline: 0 0 0 1px var(--line);
+  --elev-btn: 0 0 0 1px oklch(100% 0 0 / 0.1), 0 1px 2px oklch(0% 0 0 / 0.3);
+  --elev-card: 0 0 0 1px oklch(100% 0 0 / 0.11), 0 1px 2px oklch(0% 0 0 / 0.2),
+    0 2px 6px oklch(0% 0 0 / 0.2);
+  --elev-raised: 0 0 0 1px oklch(100% 0 0 / 0.13), 0 2px 10px oklch(0% 0 0 / 0.22);
+  --elev-inset-field: inset 0 1px 2px oklch(0% 0 0 / 0.4);
+}
+
+.shadow-hairline {
+  box-shadow: var(--elev-hairline);
+}
+.shadow-btn {
+  box-shadow: var(--elev-btn);
+}
+.shadow-card {
+  box-shadow: var(--elev-card);
+}
+.shadow-raised {
+  box-shadow: var(--elev-raised);
+}
+.shadow-inset-field {
+  box-shadow: var(--elev-inset-field);
+}
+
+/* ═══════════════════════════════════════════════════════════
+ * 动效
+ * ═══════════════════════════════════════════════════════════ */
+@keyframes shimmer-text {
+  0% {
+    background-position: 150%;
+  }
+  to {
+    background-position: -50%;
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes caret-blink {
+  0%,
+  to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+ * 基础样式
+ * ═══════════════════════════════════════════════════════════ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  /* dvh 而不是 100%：手机上浏览器地址栏收起/展开会改变可视高度，
+     用 100% 会让底部输入框被地址栏盖住。不支持 dvh 的浏览器保留 100% */
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 细滚动条，避免默认滚动条破坏紧凑布局 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+textarea,
+input,
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+ * Markdown 正文排版
+ * 集中在这里而不是用 Tailwind 类逐个映射元素，
+ * 否则 JSX 会被类名淹掉，调排版还得改代码。
+ * ═══════════════════════════════════════════════════════════ */
+.md {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.md > *:first-child {
+  margin-top: 0;
+}
+.md > *:last-child {
+  margin-bottom: 0;
+}
+
+.md p {
+  margin: 0 0 10px;
+}
+
+.md h1,
+.md h2,
+.md h3,
+.md h4,
+.md h5,
+.md h6 {
+  margin: 18px 0 8px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.md h1 {
+  font-size: 16px;
+}
+.md h2 {
+  font-size: 15px;
+}
+.md h3 {
+  font-size: 14px;
+}
+.md h4,
+.md h5,
+.md h6 {
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.md strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.md em {
+  font-style: italic;
+}
+.md del {
+  color: var(--ink-3);
+}
+
+.md a {
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.md a:hover {
+  color: var(--accent);
+}
+
+.md ul,
+.md ol {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+.md ul {
+  list-style: disc;
+}
+.md ol {
+  list-style: decimal;
+}
+.md li {
+  margin: 3px 0;
+}
+.md li::marker {
+  color: var(--ink-3);
+}
+.md li > ul,
+.md li > ol {
+  margin: 3px 0 0;
+}
+/* GFM 任务列表：去掉圆点，只留勾选框 */
+.md li:has(> input[type='checkbox']) {
+  list-style: none;
+  margin-left: -18px;
+}
+.md input[type='checkbox'] {
+  margin-right: 6px;
+  vertical-align: middle;
+  accent-color: var(--accent);
+}
+
+.md blockquote {
+  margin: 0 0 10px;
+  padding: 2px 0 2px 12px;
+  border-left: 2px solid var(--line-strong);
+  color: var(--ink-2);
+}
+.md blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.md code {
+  padding: 1px 4px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--inset);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.md pre {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--inset);
+  overflow-x: auto;
+}
+.md pre code {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.md hr {
+  margin: 16px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.md table {
+  margin: 0 0 10px;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.md th,
+.md td {
+  padding: 5px 9px;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+.md th {
+  background: var(--inset);
+  font-weight: 500;
+}
+
+.md img {
+  max-width: 100%;
+  border-radius: var(--radius-chip);
+}
+
+/* 流式输出时的光标：挂在最后一个块级元素尾部，跟随文字流动 */
+.md.is-streaming > *:last-child::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 13px;
+  margin-left: 2px;
+  border-radius: 1px;
+  background: var(--ink-2);
+  vertical-align: text-bottom;
+  animation: caret-blink 1s steps(2, start) infinite;
+}

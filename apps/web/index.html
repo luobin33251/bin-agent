@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- interactive-widget：手机上弹出键盘时让布局视口跟着缩，
+         否则输入框会被键盘盖住。不支持的浏览器会忽略这一项 -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#fbfbfc" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1d21" media="(prefers-color-scheme: dark)" />
+    <title>bin · 个人信息中枢</title>
+
+    <!-- 加到主屏幕：不做 service worker（那需要 HTTPS），但图标与全屏壳都要正确 -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="bin" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <script>
+      // 跟随系统深浅色：令牌定义在 .dark 上，这里只负责挂类名
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        var apply = function () {
+          document.documentElement.classList.toggle('dark', mq.matches);
+        };
+        apply();
+        mq.addEventListener('change', apply);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

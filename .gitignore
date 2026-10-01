@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.env
+.env.local
+
+# 数据文件（本地数据，不入库）
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/backups/
+
+# 日志
+*.log
+logs/
+
+# 编辑器
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

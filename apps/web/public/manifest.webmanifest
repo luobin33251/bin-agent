@@ -1,0 +1,24 @@
+{
+  "name": "bin · 个人信息中枢",
+  "short_name": "bin",
+  "description": "对话录入零散信息，由 AI 自主归类，之后通过对话调取",
+  "lang": "zh-CN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fbfbfc",
+  "theme_color": "#fbfbfc",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
